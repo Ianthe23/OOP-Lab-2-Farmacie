@@ -10,10 +10,10 @@
 ###    - in prima saptamana puteti folosi reprezentarea cu un struct ( un vector static si lungime in el)
 ###    - pana in saptamana 2 trebuie folosit alocare dinamica (sa acomodeze oricate elemente)
 ### Timp de lucru 2 saptamani.
-
-
+###
+###
 ## 2 Gestiune farmacie
-
+###
 ### Administratorul unei farmacii are nevoie de o aplicatie care permite gestiunea stocului din farmacie.
 ### Fiecare medicament din stoc are un cod unic, un nume,concentratie, cantitate disponibila in stoc.
 ### Creati o aplicatie care permite:
