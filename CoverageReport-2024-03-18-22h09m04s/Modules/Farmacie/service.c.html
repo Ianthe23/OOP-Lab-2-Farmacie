@@ -1,0 +1,221 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+        <meta charset="utf-8"/>
+	    <title>service.c</title>
+	    <link href="../../third-party/google-code-prettify/prettify-CppCoverage.css" type="text/css" rel="stylesheet" />
+	    <script type="text/javascript" src="../../third-party/google-code-prettify/prettify.js"></script>
+	</head>
+    <body onload="prettyPrint()">
+        <h4></h4>
+        <pre class="prettyprint lang-cpp linenums">
+#include "service.h"
+
+#include &lt;string.h&gt;
+#include &lt;assert.h&gt;
+
+<span style = "background-color:#dfd">int addMedicament(Repo* lista, int cod, char* nume, int concentratie, int cantitate) {</span>
+	
+<span style = "background-color:#dfd">	Medicament* m = createMedicament(cod, nume, concentratie, cantitate);</span>
+	
+<span style = "background-color:#dfd">	int succes = valideazaMedicament(m);
+	if (succes != 0) {
+		free(m-&gt;nume);
+		free(m);
+		return succes;</span>
+	}
+
+<span style = "background-color:#dfd">	return add(lista, (ElemType *) m, (egale_fct) egalMedicamente, (egale_coduri) egalCod, (cantitate_fct) adaugaCantitate);
+}</span>
+
+<span style = "background-color:#dfd">int modifyMedicament(Repo* lista, int cod, char* nume_nou, int concentratie_noua) {</span>
+	
+<span style = "background-color:#dfd">	Medicament *m = createMedicament(cod, nume_nou, concentratie_noua, 0);</span>
+
+<span style = "background-color:#dfd">	int succes = valideazaMedicament(m);
+	if (succes != 0) {
+		free(m-&gt;nume);
+		free(m);
+		return succes;</span>
+	}
+
+<span style = "background-color:#dfd">	return modify(lista, (ElemType* ) m, (egal_modify) egalModify, (cantitate_fct) adaugaCantitate);</span>
+
+<span style = "background-color:#dfd">}</span>
+
+<span style = "background-color:#dfd">int deleteMedicament(Repo* lista, int cod) {</span>
+
+<span style = "background-color:#dfd">	if (cod &lt;= 0)
+		return 1;</span>
+
+<span style = "background-color:#dfd">	return deleteStoc(lista, cod, (return_cod) returnCod, (sterge_cant) stergeCantitate);
+}</span>
+
+<span style = "background-color:#dfd">Repo* getAllMedicamente(Repo* lista) {</span>
+
+<span style = "background-color:#dfd">	return copyList(lista, (copy_fct) copyMedicament);
+}</span>
+
+<span style = "background-color:#dfd">Repo* sort(Repo* lista, int crescator, sort_fct cmp1, sort_fct cmp2) {
+	Repo* list = copyList(lista, (copy_fct) copyMedicament);</span>
+
+<span style = "background-color:#dfd">	for (int i = 0; i &lt; list-&gt;lungime - 1; ++i) 
+		for (int j = i + 1; j &lt; list-&gt;lungime; ++j) {
+			if ((crescator &amp;&amp; cmp1(list-&gt;elemente[i], list-&gt;elemente[j]) &gt; 0) ||</span>
+				(!crescator &amp;&amp; cmp1(list-&gt;elemente[i], list-&gt;elemente[j]) &lt; 0)) {
+<span style = "background-color:#dfd">				ElemType* temporar = list-&gt;elemente[i];
+				list-&gt;elemente[i] = list-&gt;elemente[j];
+				list-&gt;elemente[j] = temporar;
+			}
+			else if (cmp1(list-&gt;elemente[i], list-&gt;elemente[j]) == 0) {
+				if ((crescator &amp;&amp; cmp2(list-&gt;elemente[i], list-&gt;elemente[j]) == 1) ||</span>
+					(!crescator &amp;&amp; cmp2(list-&gt;elemente[i], list-&gt;elemente[j]) == 0)) {
+<span style = "background-color:#dfd">					ElemType* temporar = list-&gt;elemente[i];
+					list-&gt;elemente[i] = list-&gt;elemente[j];
+					list-&gt;elemente[j] = temporar;</span>
+				}
+			}
+<span style = "background-color:#dfd">		}</span>
+		
+<span style = "background-color:#dfd">	return list;
+}</span>
+
+<span style = "background-color:#dfd">Repo* copyListCantitate(Repo* lista, int cantitate, filter_fct_cantitate filter) {</span>
+
+<span style = "background-color:#dfd">	Repo* copie = createEmpty(lista-&gt;dest);</span>
+
+<span style = "background-color:#dfd">	for (int i = 0; i &lt; lista-&gt;lungime; ++i) {
+		if (filter(lista-&gt;elemente[i], cantitate)) {
+			add(copie, (ElemType* ) copyMedicament(lista-&gt;elemente[i]), (egale_fct) egalMedicamente, (egale_coduri) egalCod,</span>
+				(cantitate_fct) adaugaCantitate);
+		}
+<span style = "background-color:#dfd">	}
+	return copie;
+}</span>
+
+<span style = "background-color:#dfd">Repo* copyListNume(Repo* lista, char litera, filter_fct_nume filter) {</span>
+
+<span style = "background-color:#dfd">	Repo* copie = createEmpty(lista-&gt;dest);</span>
+
+<span style = "background-color:#dfd">	for (int i = 0; i &lt; lista-&gt;lungime; ++i) {
+		if (filter(lista-&gt;elemente[i], litera)) {
+			add(copie, (ElemType* )copyMedicament(lista-&gt;elemente[i]), (egale_fct) egalMedicamente, (egale_fct) egalCod, </span>
+				(cantitate_fct) adaugaCantitate);
+		}
+<span style = "background-color:#dfd">	}
+	return copie;
+}</span>
+
+/// &lt;summary&gt;
+/// TESTE
+/// &lt;/summary&gt;
+
+<span style = "background-color:#dfd">void test_addMedicament() {
+	Repo* repo = createEmpty(&amp;destroyMedicament);</span>
+
+<span style = "background-color:#dfd">	assert(addMedicament(repo, 1, "Paracetamol", 500, 20) == 0);</span>
+
+<span style = "background-color:#dfd">	assert(addMedicament(repo, 2, "Ibuprofen", -400, 30) == 3);</span>
+
+<span style = "background-color:#dfd">	destroy(repo);
+}</span>
+
+<span style = "background-color:#dfd">void test_modifyMedicament() {
+	Repo* repo = createEmpty(&amp;destroyMedicament);
+	addMedicament(repo, 1, "Paracetamol", 500, 20);</span>
+
+<span style = "background-color:#dfd">	assert(modifyMedicament(repo, 1, "Aspirin", 300) == 0);</span>
+
+<span style = "background-color:#dfd">	assert(modifyMedicament(repo, 1, "Paracetamol", -500) == 3);</span>
+
+<span style = "background-color:#dfd">	destroy(repo);
+}</span>
+
+<span style = "background-color:#dfd">void test_deleteMedicament() {
+	Repo* repo = createEmpty(&amp;destroyMedicament);
+	addMedicament(repo, 1, "Paracetamol", 500, 20);</span>
+
+<span style = "background-color:#dfd">	assert(deleteMedicament(repo, 1) == 0);</span>
+
+<span style = "background-color:#dfd">	assert(deleteMedicament(repo, -1) == 1);</span>
+
+<span style = "background-color:#dfd">	destroy(repo);
+}</span>
+
+<span style = "background-color:#dfd">void test_getAllMedicamente() {
+	Repo* repo = createEmpty(&amp;destroyMedicament);
+	addMedicament(repo, 1, "Paracetamol", 500, 20);
+	addMedicament(repo, 2, "Ibuprofen", 400, 30);</span>
+
+<span style = "background-color:#dfd">	Repo* allMedicaments = getAllMedicamente(repo);
+	assert(allMedicaments-&gt;lungime == 2);</span>
+
+<span style = "background-color:#dfd">	destroy(repo);
+	destroy(allMedicaments);
+}</span>
+
+<span style = "background-color:#dfd">void test_sort() {
+	Repo* repo = createEmpty(&amp;destroyMedicament);
+	addMedicament(repo, 1, "Paracetamol", 500, 20);
+	addMedicament(repo, 2, "Ibuprofen", 400, 30);</span>
+
+<span style = "background-color:#dfd">	Repo* sortedAsc = sort(repo, 1, (sort_fct)compNume, (sort_fct)compCantitate);
+	assert(((Medicament*)sortedAsc-&gt;elemente[0])-&gt;cantitate == 30);</span>
+
+<span style = "background-color:#dfd">	Repo* sortedDesc = sort(repo, 0, (sort_fct)compNume, (sort_fct)compCantitate);
+	assert(((Medicament*)sortedDesc-&gt;elemente[0])-&gt;cantitate == 20);</span>
+
+<span style = "background-color:#dfd">	addMedicament(repo, 3, "Paracetamol", 200, 10);
+	sortedAsc = sort(repo, 1, (sort_fct)compNume, (sort_fct)compCantitate);
+	assert(((Medicament*)sortedAsc-&gt;elemente[0])-&gt;cantitate == 30);</span>
+
+<span style = "background-color:#dfd">	sortedDesc = sort(repo, 0, (sort_fct)compNume, (sort_fct)compCantitate);
+	assert(((Medicament*)sortedDesc-&gt;elemente[0])-&gt;cantitate == 20);</span>
+
+<span style = "background-color:#dfd">	destroy(repo);
+	destroy(sortedAsc);
+	destroy(sortedDesc);
+}</span>
+
+<span style = "background-color:#dfd">void test_copyListCantitate() {
+	Repo* repo = createEmpty(&amp;destroyMedicament);
+	addMedicament(repo, 1, "Paracetamol", 500, 20);
+	addMedicament(repo, 2, "Ibuprofen", 400, 30);</span>
+
+<span style = "background-color:#dfd">	Repo* copiedList = copyListCantitate(repo, 20, (filter_fct_cantitate)filterCantitate);
+	assert(copiedList-&gt;lungime == 0);</span>
+
+<span style = "background-color:#dfd">	destroy(copiedList);
+	copiedList = copyListCantitate(repo, 30, (filter_fct_cantitate)filterCantitate);
+	assert(copiedList-&gt;lungime == 1);</span>
+
+<span style = "background-color:#dfd">	destroy(repo);
+	destroy(copiedList);
+}</span>
+
+<span style = "background-color:#dfd">void test_copyListNume() {
+	Repo* repo = createEmpty(&amp;destroyMedicament);
+	addMedicament(repo, 1, "Paracetamol", 500, 20);
+	addMedicament(repo, 2, "Ibuprofen", 400, 30);</span>
+
+<span style = "background-color:#dfd">	Repo* copiedList = copyListNume(repo, 'P', (filter_fct_nume)filterNume);
+	assert(copiedList-&gt;lungime == 1);</span>
+
+<span style = "background-color:#dfd">	destroy(repo);
+	destroy(copiedList);
+}</span></pre>
+        <hr />
+        <table width="100%">
+            <thead>
+                <tr>
+                    <th align="center">
+                        <small>Generated by</small>
+                        <a href="https://github.com/OpenCppCoverage/OpenCppCoverage/releases">
+                            <strong>OpenCppCoverage (Version: 0.9.9.0)</strong>
+                        </a>
+                    </th>
+                </tr>
+            </thead>
+        </table>
+    </body>
+</html>

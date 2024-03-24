@@ -1,0 +1,299 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+        <meta charset="utf-8"/>
+	    <title>farmacie.c</title>
+	    <link href="../../third-party/google-code-prettify/prettify-CppCoverage.css" type="text/css" rel="stylesheet" />
+	    <script type="text/javascript" src="../../third-party/google-code-prettify/prettify.js"></script>
+	</head>
+    <body onload="prettyPrint()">
+        <h4></h4>
+        <pre class="prettyprint lang-cpp linenums">
+#include "farmacie.h"
+
+#include &lt;string.h&gt;
+#include &lt;assert.h&gt;
+#include &lt;stdlib.h&gt;
+
+<span style = "background-color:#dfd">Medicament* createMedicament(int cod, char* nume, int concentratie, int cantitate) {</span>
+	int lung_nume;
+<span style = "background-color:#dfd">	Medicament* rez = malloc(sizeof(Medicament));</span>
+
+<span style = "background-color:#dfd">	if (rez == NULL) {</span>
+<span style = "background-color:#fdd">		return NULL;</span>
+	}
+
+<span style = "background-color:#dfd">	rez-&gt;cod = cod;</span>
+
+<span style = "background-color:#dfd">	lung_nume = (int)strlen(nume) + 1;
+	rez-&gt;nume = malloc(lung_nume * sizeof(char));</span>
+
+<span style = "background-color:#dfd">	if (rez-&gt;nume == NULL) {</span>
+<span style = "background-color:#fdd">		free(rez);
+		return NULL;</span>
+	}
+
+<span style = "background-color:#dfd">	strcpy_s(rez-&gt;nume, lung_nume, nume);</span>
+
+<span style = "background-color:#dfd">	rez-&gt;concentratie = concentratie;
+	rez-&gt;cantitate = cantitate;</span>
+
+<span style = "background-color:#dfd">	return rez;
+}</span>
+
+<span style = "background-color:#dfd">void destroyMedicament(Medicament* m) {</span>
+
+	//marcam ca medicamentul este distrus, ca sa evitam folosirea accidentala
+<span style = "background-color:#dfd">	free(m-&gt;nume);
+	free(m);
+}</span>
+
+<span style = "background-color:#dfd">int valideazaMedicament(Medicament* m) {</span>
+
+<span style = "background-color:#dfd">	if (m-&gt;cod &lt;= 0) {
+		return 1;</span>
+	}
+
+<span style = "background-color:#dfd">	if (strlen(m-&gt;nume) == 0) {
+		return 2;</span>
+	}
+
+<span style = "background-color:#dfd">	if (m-&gt;concentratie &lt; 0) {
+		return 3;</span>
+	}
+
+<span style = "background-color:#dfd">	if (m-&gt;cantitate &lt; 0) {
+		return 4;</span>
+	}
+
+<span style = "background-color:#dfd">	return 0;
+}
+int egalCod(Medicament* m1, Medicament* m2) {
+	if (m1-&gt;cod == m2-&gt;cod) {
+		return 1;</span>
+	}
+<span style = "background-color:#dfd">	return 0;
+}
+int egalMedicamente(Medicament* m1, Medicament* m2) {
+	if (m1-&gt;cod == m2-&gt;cod &amp;&amp; strcmp(m1-&gt;nume, m2-&gt;nume) == 0 &amp;&amp;</span>
+		m1-&gt;concentratie == m2-&gt;concentratie) {
+<span style = "background-color:#dfd">		return 1;</span>
+	}
+<span style = "background-color:#dfd">	return 0;</span>
+
+<span style = "background-color:#dfd">}</span>
+
+<span style = "background-color:#dfd">int egalModify(Medicament* m1, Medicament* m2) {
+	if (m1-&gt;cod == m2-&gt;cod &amp;&amp; m1-&gt;cantitate &gt; 0) {
+		return 1;</span>
+	}
+<span style = "background-color:#dfd">	return 0;</span>
+
+<span style = "background-color:#dfd">}</span>
+
+<span style = "background-color:#dfd">void adaugaCantitate(Medicament* m1, Medicament* m2) {
+	m1-&gt;cantitate += m2-&gt;cantitate;</span>
+
+<span style = "background-color:#dfd">}</span>
+
+<span style = "background-color:#dfd">int returnCod(Medicament* m) {
+	return m-&gt;cod;
+}</span>
+
+<span style = "background-color:#dfd">int verifStoc(Medicament* m) {
+	if (m-&gt;cantitate &gt; 0) {
+		return 1;</span>
+	}
+<span style = "background-color:#dfd">	return 0;
+}</span>
+
+<span style = "background-color:#dfd">void stergeCantitate(Medicament* m) {
+	m-&gt;cantitate = 0;
+}</span>
+
+<span style = "background-color:#dfd">int compNume(Medicament* m1, Medicament* m2) {
+	return strcmp(m1-&gt;nume, m2-&gt;nume);
+}</span>
+
+<span style = "background-color:#dfd">int compCantitate(Medicament* m1, Medicament* m2) {
+	if (m1-&gt;cantitate &gt; m2-&gt;cantitate) {
+		return 1;</span>
+	}
+<span style = "background-color:#dfd">	return 0;
+}</span>
+
+<span style = "background-color:#dfd">int filterNume(Medicament* m, char nume) {
+	if (m-&gt;nume[0] == nume) {
+		return 1;</span>
+	}
+<span style = "background-color:#dfd">	return 0;
+}</span>
+
+<span style = "background-color:#dfd">int filterCantitate(Medicament* m, int cantitate) {
+	if (m-&gt;cantitate &gt; 0 &amp;&amp; m-&gt;cantitate &lt; cantitate) {
+		return 1;</span>
+	}
+<span style = "background-color:#dfd">	return 0;
+}</span>
+
+<span style = "background-color:#dfd">Medicament* copyMedicament(Medicament* m) {
+	return createMedicament(m-&gt;cod, m-&gt;nume, m-&gt;concentratie, m-&gt;cantitate);</span>
+
+<span style = "background-color:#dfd">}</span>
+
+/// &lt;summary&gt;
+/// TESTE
+/// &lt;/summary&gt;
+
+<span style = "background-color:#dfd">void test_createMedicament() {
+    Medicament* m = createMedicament(1, "Paracetamol", 500, 20);
+    assert(m != NULL);
+    assert(m-&gt;cod == 1);
+    assert(strcmp(m-&gt;nume, "Paracetamol") == 0);
+    assert(m-&gt;concentratie == 500);
+    assert(m-&gt;cantitate == 20);
+    destroyMedicament(m);
+}</span>
+
+<span style = "background-color:#dfd">void test_destroyMedicament() {
+    Medicament* m = createMedicament(1, "Paracetamol", 500, 20);
+    destroyMedicament(m);</span>
+    // Asserting that m is NULL after destruction
+<span style = "background-color:#dfd">    assert(m-&gt;cod != 1);
+    assert(m-&gt;concentratie != 500);
+    assert(m-&gt;cantitate != 20);
+}</span>
+
+<span style = "background-color:#dfd">void test_valideazaMedicament() {
+    Medicament* m = createMedicament(1, "Paracetamol", 500, 20);
+    assert(valideazaMedicament(m) == 0);</span>
+    // Testing invalid cases
+<span style = "background-color:#dfd">    m-&gt;cod = 0;
+    assert(valideazaMedicament(m) == 1);
+    m-&gt;cod = 1; // Resetting cod for next test
+    free(m-&gt;nume);
+    m-&gt;nume = "";
+    assert(valideazaMedicament(m) == 2);
+    free(m);</span>
+
+<span style = "background-color:#dfd">    m = createMedicament(1, "Paracetamol", 500, 20);
+    m-&gt;concentratie = -500;
+    assert(valideazaMedicament(m) == 3);
+    m-&gt;concentratie = 500; // Resetting concentratie for next test
+    m-&gt;cantitate = -20;
+    assert(valideazaMedicament(m) == 4);
+    destroyMedicament(m);
+}</span>
+
+<span style = "background-color:#dfd">void test_egalCod() {
+    Medicament* m1 = createMedicament(1, "Paracetamol", 500, 20);
+    Medicament* m2 = createMedicament(1, "Aspirin", 300, 15);
+    Medicament* m3 = createMedicament(2, "Ibuprofen", 400, 30);
+    assert(egalCod(m1, m2) == 1);
+    assert(egalCod(m1, m3) == 0);
+    destroyMedicament(m1);
+    destroyMedicament(m2);
+    destroyMedicament(m3);
+}</span>
+
+<span style = "background-color:#dfd">void test_egalMedicamente() {
+    Medicament* m1 = createMedicament(1, "Paracetamol", 500, 20);
+    Medicament* m2 = createMedicament(1, "Paracetamol", 500, 20);
+    Medicament* m3 = createMedicament(2, "Ibuprofen", 400, 30);
+    assert(egalMedicamente(m1, m2) == 1);
+    assert(egalMedicamente(m1, m3) == 0);
+    destroyMedicament(m1);
+    destroyMedicament(m2);
+    destroyMedicament(m3);
+}</span>
+
+<span style = "background-color:#dfd">void test_egalModify() {
+    Medicament* m1 = createMedicament(1, "Paracetamol", 500, 20);
+    Medicament* m2 = createMedicament(1, "Paracetamol", 500, 20);
+    Medicament* m3 = createMedicament(2, "Ibuprofen", 400, -30);
+    assert(egalModify(m1, m2) == 1);
+    assert(egalModify(m1, m3) == 0);
+    destroyMedicament(m1);
+    destroyMedicament(m2);
+    destroyMedicament(m3);
+}</span>
+
+<span style = "background-color:#dfd">void test_adaugaCantitate() {
+    Medicament* m1 = createMedicament(1, "Paracetamol", 500, 20);
+    Medicament* m2 = createMedicament(2, "Ibuprofen", 400, 30);
+    adaugaCantitate(m1, m2);
+    assert(m1-&gt;cantitate == 50);
+    destroyMedicament(m1);
+    destroyMedicament(m2);
+}</span>
+
+<span style = "background-color:#dfd">void test_returnCod() {
+    Medicament* m = createMedicament(1, "Paracetamol", 500, 20);
+    assert(returnCod(m) == 1);
+    destroyMedicament(m);
+}</span>
+
+<span style = "background-color:#dfd">void test_verifStoc() {
+    Medicament* m1 = createMedicament(1, "Paracetamol", 500, 20);
+    Medicament* m2 = createMedicament(2, "Ibuprofen", 400, -30);
+    assert(verifStoc(m1) == 1);
+    assert(verifStoc(m2) == 0);
+    destroyMedicament(m1);
+    destroyMedicament(m2);
+}</span>
+
+<span style = "background-color:#dfd">void test_stergeCantitate() {
+    Medicament* m = createMedicament(1, "Paracetamol", 500, 20);
+    stergeCantitate(m);
+    assert(m-&gt;cantitate == 0);
+    destroyMedicament(m);
+}</span>
+
+<span style = "background-color:#dfd">void test_compNume() {
+    Medicament* m1 = createMedicament(1, "Paracetamol", 500, 20);
+    Medicament* m2 = createMedicament(2, "Ibuprofen", 400, 30);
+    assert(compNume(m1, m2) &gt; 0);
+    assert(compNume(m2, m1) &lt; 0);
+    destroyMedicament(m1);
+    destroyMedicament(m2);
+}</span>
+
+<span style = "background-color:#dfd">void test_compCantitate() {
+    Medicament* m1 = createMedicament(1, "Paracetamol", 500, 20);
+    Medicament* m2 = createMedicament(2, "Ibuprofen", 400, 30);
+    assert(compCantitate(m1, m2) == 0);
+    assert(compCantitate(m2, m1) == 1);
+    destroyMedicament(m1);
+    destroyMedicament(m2);
+}</span>
+
+<span style = "background-color:#dfd">void test_filterNume() {
+    Medicament* m = createMedicament(1, "Paracetamol", 500, 20);
+    assert(filterNume(m, 'P') == 1);
+    assert(filterNume(m, 'I') == 0);
+    destroyMedicament(m);
+}</span>
+
+<span style = "background-color:#dfd">void test_filterCantitate() {
+    Medicament* m1 = createMedicament(1, "Paracetamol", 500, 20);
+    Medicament* m2 = createMedicament(2, "Ibuprofen", 400, -30);
+    assert(filterCantitate(m1, 30) == 1);
+    assert(filterCantitate(m2, 0) == 0);
+    destroyMedicament(m1);
+    destroyMedicament(m2);
+}</span></pre>
+        <hr />
+        <table width="100%">
+            <thead>
+                <tr>
+                    <th align="center">
+                        <small>Generated by</small>
+                        <a href="https://github.com/OpenCppCoverage/OpenCppCoverage/releases">
+                            <strong>OpenCppCoverage (Version: 0.9.9.0)</strong>
+                        </a>
+                    </th>
+                </tr>
+            </thead>
+        </table>
+    </body>
+</html>
