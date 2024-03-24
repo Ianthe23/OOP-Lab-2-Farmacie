@@ -11,6 +11,7 @@
 ###    - pana in saptamana 2 trebuie folosit alocare dinamica (sa acomodeze oricate elemente)
 ### Timp de lucru 2 saptamani.
 
+
 ## 2 Gestiune farmacie
 
 ### Administratorul unei farmacii are nevoie de o aplicatie care permite gestiunea stocului din farmacie.
